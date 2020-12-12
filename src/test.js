@@ -1,8 +1,10 @@
 const puppeteer = require('puppeteer')
 const express = require('express')
-const { resolve } = require('path')
-const { rejects } = require('assert')
 const app = express()
+const morgan = require('morgan')
+
+// HTTP request logger middleware for node.js
+app.use(morgan('dev'))
 
 app.use((req, res, next) => {
     res.append('Access-Control-Allow-Origin', '*')
@@ -67,22 +69,22 @@ app.listen(3000, function () {
 
     const data = []
     const getCourseData = new Promise((resolve, reject) => {
-        ddlEdu[0].ddlDept.forEach((element, index) => {
+        ddlEdu[6].ddlDept.forEach((element, index) => {
             getCourse1(browser, {
                 txtYears: txtYears[0],
                 txtTerm: txtTerm[0],
-                ddlEdu: ddlEdu[0],
+                ddlEdu: ddlEdu[6],
                 ddlDeptIdx: index
             }).then(res => {
                 data.push(res)
-                if (data.length == ddlEdu[0].ddlDept.length) resolve(true)
+                if (data.length == ddlEdu[6].ddlDept.length) resolve(true)
             })
         })
     })
 
     getCourseData.then(res => {
         const fs = require('fs')
-
+        data.push(JSON.parse(fs.readFileSync('course.json', 'utf-8')))
         fs.writeFile('course.json', JSON.stringify(data), function (err) {
             if (err) { console.log(err) } else { console.log('Write operation complete.') }
         })
